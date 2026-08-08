@@ -7,13 +7,16 @@ if (!url || !anonKey) {
   console.warn('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY — set these in your Vercel project settings under Environment Variables.');
 }
 
-export const supabase = createClient(url || 'https://placeholder.supabase.co', anonKey || 'placeholder-anon-key', {
+if (!url || !anonKey) {
+  throw new Error("Supabase URL and Anon Key must be defined in your environment variables.");
+}
+
+export const supabase = createClient(url, anonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
   },
 });
-
 export type FeeCategory = 'CIVILIAN' | 'PAC_POLICE' | '4TH_CLASS';
 export type AttendanceStatus = 'present' | 'absent' | 'leave';
 export type FeeStatus = 'paid' | 'unpaid' | 'pending' | 'partial' | 'completed';
