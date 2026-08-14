@@ -11,7 +11,7 @@ export const SECTIONS = [
   'U', 'V', 'W', 'X', 'Y', 'Z',
 ] as const;
 
-export const STREAMS = ['Science', 'Commerce/Humanities'] as const;
+export const STREAMS = ['Science', 'Commerce', 'Humanities'] as const;
 
 export const SCIENCE_GROUPS = ['PCB', 'PCM'] as const;
 
