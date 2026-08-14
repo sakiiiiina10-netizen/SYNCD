@@ -3,13 +3,12 @@ import { Save, AlertCircle, Settings as SettingsIcon } from 'lucide-react';
 import Layout from '@/components/Layout';
 import PageHeader from '@/components/PageHeader';
 import { supabase } from '@/lib/supabase';
-import { CLASSES, STREAMS, FEE_CATEGORIES, UNITS, requiresStream } from '@/lib/constants';
+import { FEE_GROUPS, FEE_CATEGORIES, UNITS } from '@/lib/constants';
 import { FeeSetup } from '@/lib/types';
 
 interface SetupRow {
   id?: string;
-  class: string;
-  stream: string;
+  fee_group: string;
   fee_category: string;
   unit_number: number;
 }
@@ -21,8 +20,8 @@ interface FieldValues {
   due_date: string;
 }
 
-function rowKey(r: { class: string; stream: string; fee_category: string; unit_number: number }): string {
-  return `${r.class}|${r.stream}|${r.fee_category}|${r.unit_number}`;
+function rowKey(r: { fee_group: string; fee_category: string; unit_number: number }): string {
+  return `${r.fee_group}|${r.fee_category}|${r.unit_number}`;
 }
 
 export default function FeeSetupPage() {
@@ -40,32 +39,27 @@ export default function FeeSetupPage() {
     const newRows: SetupRow[] = [];
     const newFields: Record<string, FieldValues> = {};
 
-    CLASSES.forEach((cls) => {
-      const streams = requiresStream(cls) ? [...STREAMS] : [''];
-      streams.forEach((stream) => {
-        FEE_CATEGORIES.forEach((category) => {
-          UNITS.forEach((unit) => {
-            const existing = existingSetups.find(
-              (s) => s.class === cls &&
-                (s.stream === stream || (!s.stream && !stream)) &&
-                s.fee_category === category &&
-                s.unit_number === unit.number
-            );
-            const key = `${cls}|${stream}|${category}|${unit.number}`;
-            newRows.push({
-              id: existing?.id,
-              class: cls,
-              stream,
-              fee_category: category,
-              unit_number: unit.number,
-            });
-            newFields[key] = {
-              amount: existing?.amount?.toString() ?? '',
-              second_ward_amount: existing?.second_ward_amount?.toString() ?? '',
-              fine_amount: existing?.fine_amount?.toString() ?? '',
-              due_date: existing?.due_date ?? unit.defaultDue,
-            };
+    FEE_GROUPS.forEach((group) => {
+      FEE_CATEGORIES.forEach((category) => {
+        UNITS.forEach((unit) => {
+          const existing = existingSetups.find(
+            (s) => s.fee_group === group.label &&
+              s.fee_category === category &&
+              s.unit_number === unit.number
+          );
+          const key = rowKey({ fee_group: group.label, fee_category: category, unit_number: unit.number });
+          newRows.push({
+            id: existing?.id,
+            fee_group: group.label,
+            fee_category: category,
+            unit_number: unit.number,
           });
+          newFields[key] = {
+            amount: existing?.amount?.toString() ?? '',
+            second_ward_amount: existing?.second_ward_amount?.toString() ?? '',
+            fine_amount: existing?.fine_amount?.toString() ?? '',
+            due_date: existing?.due_date ?? unit.defaultDue,
+          };
         });
       });
     });
@@ -93,8 +87,9 @@ export default function FeeSetupPage() {
       const fine = f.fine_amount ? parseFloat(f.fine_amount) : null;
 
       const payload = {
-        class: row.class,
-        stream: row.stream || null,
+        fee_group: row.fee_group,
+        class: null,
+        stream: null,
         subject_group: null,
         fee_category: row.fee_category,
         unit_number: row.unit_number,
@@ -124,17 +119,15 @@ export default function FeeSetupPage() {
 
   const groupedRows: Record<string, SetupRow[]> = {};
   rows.forEach((r) => {
-    let key = r.class;
-    if (r.stream) key += ` — ${r.stream}`;
-    if (!groupedRows[key]) groupedRows[key] = [];
-    groupedRows[key].push(r);
+    if (!groupedRows[r.fee_group]) groupedRows[r.fee_group] = [];
+    groupedRows[r.fee_group].push(r);
   });
 
   return (
     <Layout>
       <PageHeader
         title="Fee Setup"
-        subtitle="Set fee amounts, 2nd ward amounts, fines, and due dates for each class, stream, category, and unit."
+        subtitle="Set fee amounts, 2nd ward amounts, fines, and due dates for each class group, category, and unit."
         action={
           <button onClick={handleSave} disabled={saving} className="btn-primary">
             <Save className="h-4 w-4" />
@@ -163,10 +156,10 @@ export default function FeeSetupPage() {
           <div className="text-sm text-blue-700 dark:text-blue-300">
             <p className="font-medium">How fee setup works:</p>
             <ul className="mt-2 space-y-1 text-blue-600 dark:text-blue-400">
-              <li>• Set fee amount, 2nd ward amount, fine, and due date for each class, category, and unit (1–4)</li>
-              <li>• Classes 11 & 12 have separate fees for Science (covers both PCB & PCM) and Commerce/Humanities</li>
+              <li>• Fees are set per class group (e.g. Nursery to UKG, Class 1 to Class 2) — all classes in a group share the same fee</li>
+              <li>• Class 11 & 12 has separate groups: Science (covers PCB & PCM) and Commerce/Humanities</li>
+              <li>• Set fee amount, 2nd ward amount, fine, and due date for each category and unit (1-4)</li>
               <li>• The 2nd Ward Amount is the fee charged to students who are the second child from the same parents</li>
-              <li>• The due date is when the student must submit fees for that unit</li>
               <li>• Leave amount/fine blank if not applicable — treated as ₹0</li>
             </ul>
           </div>
