@@ -17,9 +17,10 @@ export interface Student {
 
 export interface FeeSetup {
   id: string;
-  class: string;
+  class: string | null;
   stream: string | null;
   subject_group: string | null;
+  fee_group: string | null;
   fee_category: string;
   unit_number: number;
   amount: number | null;
