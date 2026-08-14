@@ -1,5 +1,5 @@
 import { FeeSetup, FeePayment, Student } from './types';
-import { UNITS } from './constants';
+import { UNITS, getFeeGroupForStudent } from './constants';
 
 export function getDueDateForUnit(unitNumber: number, year: number): string {
   const dueRanges: Record<number, [number, number]> = {
@@ -32,12 +32,16 @@ export function calculateStudentFee(
     paymentDate: string | null;
   }>;
 } {
-  const relevantSetups = feeSetups.filter(
-    (fs) =>
-      fs.class === student.class &&
-      (fs.stream === student.stream || (!fs.stream && !student.stream)) &&
-      fs.fee_category === student.fee_category
-  );
+  const studentGroup = getFeeGroupForStudent(student.class, student.stream);
+
+  const relevantSetups = feeSetups.filter((fs) => {
+    if (fs.fee_group) {
+      return fs.fee_group === studentGroup?.label && fs.fee_category === student.fee_category;
+    }
+    if (fs.class !== student.class) return false;
+    if (fs.stream !== student.stream && !(fs.stream === null && student.stream === null)) return false;
+    return fs.fee_category === student.fee_category;
+  });
 
   let totalExpected = 0;
   let totalPaid = 0;
