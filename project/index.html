@@ -2,18 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    
+    <!-- Custom Logo Website Tab Favicon Configuration -->
+    <!-- The rel="icon" defines the main tab logo icon. Point 'href' to your custom logo file path -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SYNCD — School Management System</title>
-    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
+    <title>SYNCD - School Management System</title>
+    
+    <!-- Cleaned Open Graph Metadata for Social Media & Link Previews -->
+    <meta property="og:title" content="SYNCD - School Management System" />
+    <meta property="og:description" content="A comprehensive digital administration ecosystem for modern educational institutions." />
+    <!-- Replace the generic image link below with your hosted portal banner or school building graphic -->
+    <meta property="og:image" content="/images/og-preview.png" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Cleaned Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+    <meta name="twitter:title" content="SYNCD - School Management System" />
+    <meta name="twitter:description" content="A comprehensive digital administration ecosystem for modern educational institutions." />
+    <meta name="twitter:image" content="/images/og-preview.png" />
+    
+    <!-- Performance Optimization: Asset Preconnecting -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Typography/Google Fonts Integration -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>
+    <!-- Client Application Entry Script Layout -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
