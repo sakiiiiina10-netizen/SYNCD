@@ -25,9 +25,14 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+    const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      window.location.href = '/';
+    }
   };
 
   return (
