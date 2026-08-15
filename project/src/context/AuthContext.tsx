@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
-   const signOut = async () => {
+    const signOut = async () => {
     try {
       await supabase.auth.signOut();
     } catch (error) {
@@ -54,6 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setSession(null);
       setUser(null);
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
     }
   };
 
