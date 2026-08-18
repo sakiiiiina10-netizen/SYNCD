@@ -60,16 +60,22 @@ export default function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="new-password">
+            {/* 1. Hidden Honeypot Fields to trick the browser's automated scanner */}
+            <input type="text" style={{ display: 'none' }} name="fake_email" />
+            <input type="password" style={{ display: 'none' }} name="fake_password" />
+
             <div>
               <label className="label">Email</label>
               <input
                 type="email"
                 value={email}
+                name="user_email_secure_field"
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 className="input"
-                autoComplete="off"
+                {/* 2. Using a non-standard string breaks the browser's automated match rule */}
+                autoComplete="nop-auth-field-isolation"
               />
             </div>
 
@@ -79,10 +85,11 @@ export default function Login() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
+                  name="user_password_secure_field"
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="input pr-11"
-                  autoComplete="off"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
