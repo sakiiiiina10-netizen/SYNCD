@@ -82,7 +82,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="input pr-11"
-                  autoComplete="current-password"
+                  autoComplete="off"
                 />
                 <button
                   type="button"
